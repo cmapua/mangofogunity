@@ -171,6 +171,19 @@ namespace MangoFog
             }
         }
 
+        //private Shader _fowStandard;
+
+        private void UpdateFowStandardGlobals()
+        {
+            //if (!_fowStandard) _fowStandard = Shader.Find("MangoFog/FOWStandard");
+            
+            Shader.SetGlobalTexture("_GlobalFOWData", chunk.texture);
+            Shader.SetGlobalFloat("_GlobalBlendFactor", chunk.BlendFactor);
+            Shader.SetGlobalColor("_GlobalUnexplored", unexploredColor);
+            Shader.SetGlobalColor("_GlobalExplored", exploredColor);
+            Shader.SetGlobalVector("_GlobalPos", chunk.transform.position);
+        }
+
         /// <summary>
         /// Called when draw mode is MeshRenderer or Sprite.
         /// </summary>
@@ -190,6 +203,8 @@ namespace MangoFog
                     mat.SetColor("_Unexplored", unexploredColor);
                     mat.SetColor("_Explored", exploredColor);
                 }
+                
+                UpdateFowStandardGlobals();
             }
         }
 
@@ -212,6 +227,8 @@ namespace MangoFog
                         mat.SetColor("_Unexplored", unexploredColor);
                         mat.SetColor("_Explored", exploredColor);
                     }
+                    
+                    UpdateFowStandardGlobals();
                 }
 
                 Graphics.DrawMesh(mesh, meshMatrix, mat, 0);
