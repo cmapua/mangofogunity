@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace MangoFog
 {
@@ -114,6 +115,7 @@ namespace MangoFog
 		protected Thread fogThread;
 		protected volatile bool doThread;
 		protected ConcurrentQueue<MangoFogState> _nextThreadStates = new ConcurrentQueue<MangoFogState>();
+        protected CustomSampler fogSampler;
 
 		#endregion
 
@@ -204,7 +206,9 @@ namespace MangoFog
 				new Vector3(chunkSize, chunkSize, instance.heightRange.y - instance.heightRange.x);
 
 			CreateGrid();
-		}
+
+            fogSampler = CustomSampler.Create("Mango Fog Sampler");
+        }
 
 		public void StartChunk()
 		{
@@ -958,6 +962,7 @@ namespace MangoFog
 		{
 			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 			int cid = chunkID;
+            Profiler.BeginThreadProfiling("Mango Fog Threads", $"Chunk #{cid}");
 
 			while (doThread)
 			{
@@ -971,6 +976,8 @@ namespace MangoFog
 				// make sure the buffer needs updating and revealer changes were made
 				if (nextState == MangoFogState.NeedUpdate)
 				{
+                    fogSampler.Begin();
+                    
 					sw.Reset();
 					sw.Start();
 					UpdateBuffer();
@@ -980,8 +987,12 @@ namespace MangoFog
 
 					// buffer was updated, update the texture
 					_nextThreadStates.Enqueue(MangoFogState.UpdateTexture);
+                    
+                    fogSampler.End();
 				}
 			}
+            
+            Profiler.EndThreadProfiling();
 			#if UNITY_EDITOR
 				Debug.Log("The thread has exited.");
 			#endif
