@@ -99,19 +99,8 @@ namespace MangoFog
 
         public void SetDrawMode(MangoDrawMode mode)
 		{
-			switch (mode)
-			{
-                case MangoDrawMode.MeshRenderer:
-                    drawMode = 0;
-                    break;
-                case MangoDrawMode.GPU:
-                    drawMode = 1;
-                    break;
-                case MangoDrawMode.Sprite:
-                    drawMode = 2;
-                    break;
-            }
-		}
+            drawMode = (int)mode;
+        }
 
         public void SetColors(Color unexploredColor, Color exploredColor)
         {
@@ -164,7 +153,7 @@ namespace MangoFog
                 }
             }
 
-            if (mat == null)
+            if (mat == null && drawMode != 3)
             {
                 enabled = false;
                 return;
@@ -175,6 +164,7 @@ namespace MangoFog
 
         private void UpdateFowStandardGlobals()
         {
+            if (!chunk) return;
             //if (!_fowStandard) _fowStandard = Shader.Find("MangoFog/FOWStandard");
             
             Shader.SetGlobalTexture("_GlobalFOWData", chunk.texture);
@@ -203,8 +193,6 @@ namespace MangoFog
                     mat.SetColor("_Unexplored", unexploredColor);
                     mat.SetColor("_Explored", exploredColor);
                 }
-                
-                UpdateFowStandardGlobals();
             }
         }
 
@@ -227,8 +215,6 @@ namespace MangoFog
                         mat.SetColor("_Unexplored", unexploredColor);
                         mat.SetColor("_Explored", exploredColor);
                     }
-                    
-                    UpdateFowStandardGlobals();
                 }
 
                 Graphics.DrawMesh(mesh, meshMatrix, mat, 0);
@@ -247,6 +233,11 @@ namespace MangoFog
                 }
 
                 return;
+            }
+
+            if (drawMode == 3)
+            {
+                UpdateFowStandardGlobals();
             }
         }
 
