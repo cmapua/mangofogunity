@@ -26,6 +26,7 @@ namespace MangoFog
 		MeshRenderer,
 		GPU,
 		Sprite,
+        Custom
 	}
 
 	public enum MangoFogChunkSquared
