@@ -646,9 +646,9 @@ namespace MangoFog
 			float worldToTex = (float)textureSize / chunkSize;
 
 			// Update the visibility buffer, one revealer at a time
-			for (int i = 0; i < MangoFogInstance.revealers.size; ++i)
+			for (int i = 0; i < MangoFogInstance.Instance.revealers.size; ++i)
 			{
-				IMangoFogRevealer rev = MangoFogInstance.revealers[i];
+				IMangoFogRevealer rev = MangoFogInstance.Instance.revealers[i];
 				if (rev.IsValid())
 					if (rev.GetRevealerType() == RevealerType.Radius)
 						RevealUsingRadius(rev, worldToTex);

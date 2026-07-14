@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -78,16 +79,16 @@ namespace MangoFog
 		protected Dictionary<int, MangoFogChunk> chunksByID = new Dictionary<int, MangoFogChunk>();
 
 		//the dictionary to register revealers
-		public static Dictionary<int, MangoFogRevealer> revealerRegister = new Dictionary<int, MangoFogRevealer>();
+		public Dictionary<int, MangoFogRevealer> revealerRegister = new Dictionary<int, MangoFogRevealer>();
 
 		//the revealers list
-		public static BetterList<IMangoFogRevealer> revealers = new BetterList<IMangoFogRevealer>();
+		public BetterList<IMangoFogRevealer> revealers = new BetterList<IMangoFogRevealer>();
 
 		// the revealers that have been added since last update
-		public static BetterList<IMangoFogRevealer> revealersAdded = new BetterList<IMangoFogRevealer>();
+		public BetterList<IMangoFogRevealer> revealersAdded = new BetterList<IMangoFogRevealer>();
 
 		// the revealers that have been removed since last update
-		public static BetterList<IMangoFogRevealer> revealersRemoved = new BetterList<IMangoFogRevealer>();
+		public BetterList<IMangoFogRevealer> revealersRemoved = new BetterList<IMangoFogRevealer>();
 
 		/// <summary>
 		/// Enable the Debug Logs and MongoFogDebug Instance if it exists.
@@ -320,7 +321,7 @@ namespace MangoFog
 		{
 			if (rev != null)
 			{
-				lock (revealersAdded) revealersAdded.Add(rev);
+				lock (Instance.revealersAdded) Instance.revealersAdded.Add(rev);
 			}
 		}
 
@@ -331,7 +332,7 @@ namespace MangoFog
 		{
 			if (rev != null)
 			{
-				lock (revealersRemoved) revealersRemoved.Add(rev);
+				lock (Instance.revealersRemoved) Instance.revealersRemoved.Add(rev);
 			}
 		}
 
@@ -434,7 +435,12 @@ namespace MangoFog
 			}
 		}
 
-		public void OnApplicationExit()
+        private void OnDestroy()
+        {
+            Instance = null;
+        }
+
+        public void OnApplicationExit()
 		{
 
 		}
