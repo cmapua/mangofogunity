@@ -856,7 +856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugModeEnabled: 1
-  drawMode: 0
+  drawMode: 3
   Perspective3DRenderRotation: {x: 90, y: 0, z: 0}
   Orthographic2DRenderRotation: {x: 0, y: 0, z: 0}
   fogMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
@@ -876,14 +876,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 513
   heightRange: {x: 0, y: 100}
-  margin: 0.4
-  chunkLOSRaycastRadius: 0
+  margin: 0.5
+  chunkLOSRaycastRadius: 0.1
   fogRenderHeightPosition: 1
   orientation: 0
-  textureBlendTime: 0
-  blurIterations: 3
-  updateFrequency: 0.1
-  clampBlendFactorToTextureTime: 0
+  textureBlendTime: 0.1
+  blurIterations: 2
+  updateFrequency: 0.05
+  clampBlendFactorToTextureTime: 1
   rootChunkPosition: {x: -256, y: 0, z: 0}
   chunkBoundsMultiplier: {x: 1, y: 1, z: 1}
   chunkSeamBufferDelay: 0.5
