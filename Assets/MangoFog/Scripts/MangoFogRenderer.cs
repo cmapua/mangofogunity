@@ -110,6 +110,12 @@ namespace MangoFog
 
         public void Init()
         {
+            if (drawMode == 3) // custom
+            {
+                InitFowStandardGlobals();
+                return;
+            }
+
             if (mat == null)
             {
                 if (drawMode == 0) // mesh mode
@@ -160,18 +166,22 @@ namespace MangoFog
             }
         }
 
-        //private Shader _fowStandard;
+        private void InitFowStandardGlobals()
+        {
+            if (!chunk || chunk.GetChunkID() > 0) return;
+
+            Shader.SetGlobalVector("_GlobalPos", MangoFogInstance.Instance.rootChunkPosition);
+            Shader.SetGlobalColor("_GlobalUnexplored", unexploredColor);
+            Shader.SetGlobalColor("_GlobalExplored", exploredColor);
+            Shader.SetGlobalFloat("_ChunkSize", MangoFogInstance.Instance.chunkSize);
+        }
 
         private void UpdateFowStandardGlobals()
         {
-            if (!chunk) return;
-            //if (!_fowStandard) _fowStandard = Shader.Find("MangoFog/FOWStandard");
+            if (!chunk || chunk.GetChunkID() > 0) return;           
             
             Shader.SetGlobalTexture("_GlobalFOWData", chunk.texture);
             Shader.SetGlobalFloat("_GlobalBlendFactor", chunk.BlendFactor);
-            Shader.SetGlobalColor("_GlobalUnexplored", unexploredColor);
-            Shader.SetGlobalColor("_GlobalExplored", exploredColor);
-            Shader.SetGlobalVector("_GlobalPos", chunk.transform.position);
         }
 
         /// <summary>

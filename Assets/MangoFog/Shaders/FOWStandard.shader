@@ -7,11 +7,6 @@
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
-        _FOWStrength ("FOW Strength", Range(0,1)) = 1.0
-        _FOWTestLerp ("FOW Test Lerp Explored", Range(0,1)) = 0.0
-        _TexSize ("FOW Texture Size", Float) = 1.0
-        _ChunkSize ("FOW Chunk Size", Float) = 1.0
-        _ChunkOffset ("FOW Chunk Offset", Vector) = (0.0, 0.0, 0.0, 0.0) 
     }
     SubShader
     {
@@ -39,19 +34,18 @@
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
-        float _FOWStrength;
-        float _FOWTestLerp;
-        float _TexSize;
-        float _ChunkSize;
-        float3 _ChunkOffset;
         float3 _Emission;
         
         // global
-        uniform sampler2D _GlobalFOWData;
+        // set once
+        uniform float _ChunkSize;
+        uniform float4 _GlobalPos;
         uniform half4 _GlobalUnexplored;
 		uniform half4 _GlobalExplored;
+
+        // set per tick
+        uniform sampler2D _GlobalFOWData;
 		uniform half _GlobalBlendFactor;
-        float4 _GlobalPos;
 
         // varying?
         float _VaryingAlpha;
@@ -76,8 +70,9 @@
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float3 pos = IN.worldPos - _ChunkOffset; //_GlobalPos;
-            pos *= _TexSize/_ChunkSize;
+            float3 globalPos = _GlobalPos - (_ChunkSize * 0.5);
+            float3 pos = IN.worldPos - globalPos;
+            pos *= 1.0 / _ChunkSize;
             half4 data = tex2D(_GlobalFOWData, float2(pos.x, pos.z));
             half2 fog = lerp(data.rg, data.ba, _GlobalBlendFactor);
 			half4 fowColor = lerp(_GlobalUnexplored, _GlobalExplored, fog.g);
@@ -85,7 +80,7 @@
 
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-            o.Albedo = c.rgb; //(fowColor.rgb * (1.0 - _FOWStrength));
+            o.Albedo = c.rgb;
             
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
