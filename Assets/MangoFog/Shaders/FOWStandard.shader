@@ -3,10 +3,10 @@
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
-        _Emission ("Emission", Color) = (0,0,0,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
+        //_Emission ("Emission", Color) = (0,0,0,1)
     }
     SubShader
     {
@@ -36,18 +36,17 @@
         fixed4 _Color;
         float3 _Emission;
         
-        // global
-        // set once
-        uniform float _ChunkSize;
-        uniform float4 _GlobalPos;
-        uniform half4 _GlobalUnexplored;
-		uniform half4 _GlobalExplored;
+        // global -- set once on initialize
+        float _ChunkSize;
+        float4 _RootChunkPos;
+        half4 _GlobalUnexplored;
+		half4 _GlobalExplored;
 
-        // set per tick
-        uniform sampler2D _GlobalFOWData;
-		uniform half _GlobalBlendFactor;
+        // global -- set per tick
+        sampler2D _GlobalFOWData;
+		float _GlobalBlendFactor;
 
-        // varying?
+        // global -- varyings
         float _VaryingAlpha;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -70,8 +69,8 @@
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float3 globalPos = _GlobalPos - (_ChunkSize * 0.5);
-            float3 pos = IN.worldPos - globalPos;
+            float3 rootPos = _RootChunkPos - (_ChunkSize * 0.5);
+            float3 pos = IN.worldPos - rootPos;
             pos *= 1.0 / _ChunkSize;
             half4 data = tex2D(_GlobalFOWData, float2(pos.x, pos.z));
             half2 fog = lerp(data.rg, data.ba, _GlobalBlendFactor);

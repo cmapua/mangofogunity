@@ -6,6 +6,13 @@ namespace MangoFog
 {
     public class MangoFogRenderer : MonoBehaviour
     {
+        private static readonly int RootChunkPos = Shader.PropertyToID("_RootChunkPos");
+        private static readonly int GlobalUnexplored = Shader.PropertyToID("_GlobalUnexplored");
+        private static readonly int GlobalExplored = Shader.PropertyToID("_GlobalExplored");
+        private static readonly int ChunkSize = Shader.PropertyToID("_ChunkSize");
+        private static readonly int GlobalFowData = Shader.PropertyToID("_GlobalFOWData");
+        private static readonly int GlobalBlendFactor = Shader.PropertyToID("_GlobalBlendFactor");
+
         /// <summary>
         /// The chunk associated with this renderer
         /// </summary>
@@ -169,19 +176,23 @@ namespace MangoFog
         private void InitFowStandardGlobals()
         {
             if (!chunk || chunk.GetChunkID() > 0) return;
+            
+            var rootChunkPos = MangoFogInstance.Instance.DoChunks()
+                ? chunk.transform.position - Vector3.one * chunk.ChunkSize
+                : MangoFogInstance.Instance.rootChunkPosition;
 
-            Shader.SetGlobalVector("_GlobalPos", MangoFogInstance.Instance.rootChunkPosition);
-            Shader.SetGlobalColor("_GlobalUnexplored", unexploredColor);
-            Shader.SetGlobalColor("_GlobalExplored", exploredColor);
-            Shader.SetGlobalFloat("_ChunkSize", MangoFogInstance.Instance.chunkSize);
+            Shader.SetGlobalVector(RootChunkPos, rootChunkPos);
+            Shader.SetGlobalColor(GlobalUnexplored, unexploredColor);
+            Shader.SetGlobalColor(GlobalExplored, exploredColor);
+            Shader.SetGlobalFloat(ChunkSize, chunk.ChunkSize);
         }
 
         private void UpdateFowStandardGlobals()
         {
             if (!chunk || chunk.GetChunkID() > 0) return;           
             
-            Shader.SetGlobalTexture("_GlobalFOWData", chunk.texture);
-            Shader.SetGlobalFloat("_GlobalBlendFactor", chunk.BlendFactor);
+            Shader.SetGlobalTexture(GlobalFowData, chunk.texture);
+            Shader.SetGlobalFloat(GlobalBlendFactor, chunk.BlendFactor);
         }
 
         /// <summary>
