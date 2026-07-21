@@ -125,6 +125,8 @@ namespace MangoFog
 		public void SetChunkID(int id) { chunkID = id; }
 		public int GetChunkID() { return chunkID; }
 		public int GetChangeState() { return changeStates[chunkID]; }
+        public int GetBufferSize() { return textureSizeSq; }
+        public Vector3 GetChunkOrigin() { return chunkOrigin; }
 		public MangoFogRenderer GetRenderer() { return fogRenderer; }
 		public void SetRenderer(MangoFogRenderer renderer) { fogRenderer = renderer; }
 
@@ -341,21 +343,28 @@ namespace MangoFog
 		/// <returns></returns>
 		public int PositionToBufferIndex(Vector3 pos)
 		{
-			pos -= chunkOrigin;
-			float worldToTex = (float)textureSize / chunkSize;
-
-			int cx = Mathf.RoundToInt(pos.x * worldToTex);
-			int cy;
-			if (orientation == MangoFogOrientation.Perspective3D)
-				cy = Mathf.RoundToInt(pos.z * worldToTex);
-			else
-				cy = Mathf.RoundToInt(pos.y * worldToTex);
-
-			cx = Mathf.Clamp(cx, 0, textureSize - 1);
-			cy = Mathf.Clamp(cy, 0, textureSize - 1);
+			WorldToTex(pos, out var cx, out var cy);
 
 			return cx + cy * textureSize;
 		}
+
+        /// <summary>
+        /// Converts world position to texture coordinates.
+        /// </summary>
+        public void WorldToTex(Vector3 pos, out int cx, out int cy)
+        {
+            pos -= chunkOrigin;
+            float worldToTex = (float)textureSize / chunkSize;
+
+            cx = Mathf.RoundToInt(pos.x * worldToTex);
+            if (orientation == MangoFogOrientation.Perspective3D)
+                cy = Mathf.RoundToInt(pos.z * worldToTex);
+            else
+                cy = Mathf.RoundToInt(pos.y * worldToTex);
+
+            cx = Mathf.Clamp(cx, 0, textureSize - 1);
+            cy = Mathf.Clamp(cy, 0, textureSize - 1);
+        }
 
 		/// <summary>
 		/// Checks to see if the specified position is currently visible.
@@ -482,18 +491,15 @@ namespace MangoFog
 
 		public void SetHeight(Vector3 pos, int height)
 		{
-			pos -= chunkOrigin;
-
-			float worldToTex = (float)textureSize / chunkSize;
-
-			int cx = Mathf.RoundToInt(pos.x * worldToTex);
-			int cy = Mathf.RoundToInt(pos.y * worldToTex);
-
-			cx = Mathf.Clamp(cx, 0, textureSize - 1);
-			cy = Mathf.Clamp(cy, 0, textureSize - 1);
-
+            WorldToTex(pos, out var cx, out var cy);
 			mHeights[cx, cy] = height;
 		}
+
+        public int GetHeight(Vector3 pos)
+        {
+            WorldToTex(pos, out var cx, out var cy);
+            return mHeights[cx, cy];
+        }
 
 		/// <summary>
 		/// Convert the specified height into the internal integer representation. Integer checks are much faster than floats.
