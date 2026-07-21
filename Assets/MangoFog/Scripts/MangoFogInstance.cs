@@ -536,6 +536,22 @@ namespace MangoFog
 				Debug.Log("Mango Fog Instance Generated Chunks.");
 		}
 
+        public MangoFogChunk GetChunkById(int id)
+        {
+            chunksByID.TryGetValue(id, out var chunk);
+            return chunk;
+        }
+
+        public MangoFogChunk GetChunkThatEnclosesPosition(Vector3 position)
+        {
+            foreach (var chunk in chunksByID.Values)
+            {
+                if (chunk.IsWithinBounds(position)) return chunk;
+            }
+
+            return null;
+        }
+
 		#endregion
 
 		#region Private Methods

@@ -577,6 +577,25 @@ namespace MangoFog
 			}
 		}
 
+        public bool IsWithinBounds(Vector3 pos)
+        {
+            var p = pos - transform.position;
+            var halfSize = chunkSize * 0.5f;
+            if (p.x > halfSize || p.x < -halfSize) return false;
+            
+            if (orientation == MangoFogOrientation.Perspective3D)
+            {
+                if (p.z > halfSize || p.z < -halfSize) return false;
+            }
+            else
+            {
+                if (p.y > halfSize || p.y < -halfSize) return false;
+            }
+
+            return true;
+        }
+
+
 		#endregion
 
 		#region Private Methods
