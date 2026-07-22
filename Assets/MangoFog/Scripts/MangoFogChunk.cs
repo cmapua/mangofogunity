@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Color = UnityEngine.Color;
 
 namespace MangoFog
 {
@@ -1051,14 +1052,35 @@ namespace MangoFog
 		/// Show the area covered by the fog of war.
 		/// </summary>
 		protected void OnDrawGizmosSelected()
-		{
+        {
+            var origMatrix = Gizmos.matrix;
 			Gizmos.matrix = transform.localToWorldMatrix;
-			Gizmos.color = UnityEngine.Color.yellow;
-			bool drawGizmo3D = orientation == MangoFogOrientation.Perspective3D ? true: false;
-			if (drawGizmo3D)
-				Gizmos.DrawWireCube(new Vector3(0f, 0f, 0f), new Vector3(chunkSize, 0f, chunkSize));
-			else
-				Gizmos.DrawWireCube(new Vector3(0f, 0f, 0f), new Vector3(chunkSize, chunkSize, 0f));
+			Gizmos.color = Color.yellow;
+
+            var drawGizmo3D = orientation == MangoFogOrientation.Perspective3D;
+            var isGPUDrawMode = rootInstance.drawMode is MangoDrawMode.GPU;
+            if (drawGizmo3D)
+            {
+                if (!isGPUDrawMode)
+                {
+                    Gizmos.matrix *= Matrix4x4.Rotate(Quaternion.Euler(rootInstance.Perspective3DRenderRotation));
+                    Gizmos.DrawWireCube(new Vector3(0f, 0f, 0f), new Vector3(1, 0, 1));
+                }
+                else
+                {
+                    Gizmos.DrawWireCube(new Vector3(0f, 0f, 0f), new Vector3(chunkSize, 0, chunkSize));
+                }
+            }
+            else
+            {
+                Gizmos.matrix *= Matrix4x4.Rotate(Quaternion.Euler(rootInstance.Orthographic2DRenderRotation));
+                Gizmos.DrawWireCube(new Vector3(0f, 0f, 0f), new Vector3(1, 1, 0));
+            }
+
+            Gizmos.matrix = origMatrix;
+            
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(chunkOrigin, 10f);
 		}
 
 		#endregion
