@@ -365,6 +365,20 @@ namespace MangoFog
             cx = Mathf.Clamp(cx, 0, textureSize - 1);
             cy = Mathf.Clamp(cy, 0, textureSize - 1);
         }
+        
+        /// <summary>
+        /// Converts texture coordinates to world position.
+        /// </summary>
+        public void TexToWorld(int x, int y, out Vector3 pos)
+        {
+            if (orientation == MangoFogOrientation.Perspective3D)
+                pos = new Vector3(x, 0, y);
+            else
+                pos = new Vector3(x, y, 0);
+
+            pos /= textureSize / chunkSize;
+            pos += chunkOrigin;
+        }
 
 		/// <summary>
 		/// Checks to see if the specified position is currently visible.
