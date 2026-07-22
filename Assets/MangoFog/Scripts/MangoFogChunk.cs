@@ -501,6 +501,16 @@ namespace MangoFog
             return mHeights[cx, cy];
         }
 
+        public void SetHeightByTexCoords(int x, int y, int height)
+        {
+            mHeights[x, y] = height;
+        }
+
+        public int GetHeightByTexCoords(int x, int y)
+        {
+            return mHeights[x, y];
+        }
+
 		/// <summary>
 		/// Convert the specified height into the internal integer representation. Integer checks are much faster than floats.
 		/// </summary>
