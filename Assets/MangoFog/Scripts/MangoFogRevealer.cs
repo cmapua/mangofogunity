@@ -53,7 +53,7 @@ namespace MangoFog
 		public void Release() { unit.StopRevealing(); }
 
 		//updates the revealer values from its unit owner
-		public void Update(int deltaMS)
+		public void UpdateRevealer(int deltaMS)
 		{
 			position = unit.GetPosition();
 			rot = unit.GetRotation();

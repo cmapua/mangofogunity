@@ -18,7 +18,7 @@ namespace MangoFog
         float GetFOVDegrees();
         float GetFOVCosine();
         int GetUniqueID();
-        void Update(int deltaMS);
+        void UpdateRevealer(int deltaMS);
         void Release();
         void Invalidate();
     }

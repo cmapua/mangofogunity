@@ -79,7 +79,7 @@ namespace MangoFog
 		protected Dictionary<int, MangoFogChunk> chunksByID = new Dictionary<int, MangoFogChunk>();
 
 		//the dictionary to register revealers
-		public Dictionary<int, MangoFogRevealer> revealerRegister = new Dictionary<int, MangoFogRevealer>();
+		public Dictionary<int, IMangoFogRevealer> revealerRegister = new Dictionary<int, IMangoFogRevealer>();
 
 		//the revealers list
 		public BetterList<IMangoFogRevealer> revealers = new BetterList<IMangoFogRevealer>();
@@ -296,7 +296,7 @@ namespace MangoFog
 
 		public int GetTotalRevealers() { return revealers.size; }
 
-		public void AddRevealer(MangoFogRevealer rev)
+		public void AddRevealer(IMangoFogRevealer rev)
 		{
 			if (!revealerRegister.ContainsKey(rev.GetUniqueID()))
 			{
@@ -305,7 +305,7 @@ namespace MangoFog
 			}
 		}
 
-		public void RemoveRevealer(MangoFogRevealer rev)
+		public void RemoveRevealer(IMangoFogRevealer rev)
 		{
 			if (revealerRegister.ContainsKey(rev.GetUniqueID()))
 			{
@@ -317,22 +317,22 @@ namespace MangoFog
 		/// <summary>
 		/// Create a new fog revealer.
 		/// </summary>
-		static void DoAddRevealer(IMangoFogRevealer rev)
+		private void DoAddRevealer(IMangoFogRevealer rev)
 		{
 			if (rev != null)
 			{
-				lock (Instance.revealersAdded) Instance.revealersAdded.Add(rev);
+				lock (revealersAdded) revealersAdded.Add(rev);
 			}
 		}
 
 		/// <summary>
 		/// Delete the specified revealer.
 		/// </summary>
-		static void DoRemoveRevealer(IMangoFogRevealer rev)
+        private void DoRemoveRevealer(IMangoFogRevealer rev)
 		{
 			if (rev != null)
 			{
-				lock (Instance.revealersRemoved) Instance.revealersRemoved.Add(rev);
+				lock (revealersRemoved) revealersRemoved.Add(rev);
 			}
 		}
 
@@ -607,7 +607,7 @@ namespace MangoFog
 
 			for (int i = revealers.size - 1; i >= 0; i--)
 			{
-				revealers[i].Update(deltaMS);
+				revealers[i].UpdateRevealer(deltaMS);
 				if (!revealers[i].IsValid())
 					revealers[i].Release();
 			}
